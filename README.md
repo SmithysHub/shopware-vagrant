@@ -1,11 +1,11 @@
 <a href="http://www.ffuenf.de" title="ffuenf - code • design • e-commerce"><img src="https://github.com/ffuenf/Ffuenf_Common/blob/master/skin/adminhtml/default/default/ffuenf/ffuenf.png" alt="ffuenf - code • design • e-commerce" /></a>
 
-vagrant-shopware
+shopware-vagrant
 ================
-[![GitHub tag](https://img.shields.io/github/tag/ffuenf/vagrant-shopware.svg)][tag]
+[![GitHub tag](https://img.shields.io/github/tag/ffuenf/shopware-vagrant.svg)][tag]
 [![PayPal Donate](https://img.shields.io/badge/paypal-donate-blue.svg)][paypal_donate]
-[tag]: https://github.com/ffuenf/vagrant-shopware
-[paypal_donate]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J2PQS2WLT2Y8W&item_name=Shopware%3a%20vagrant-shopware&item_number=vagrant-shopware&currency_code=EUR
+[tag]: https://github.com/ffuenf/shopware-vagrant/tags
+[paypal_donate]: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=J2PQS2WLT2Y8W&item_name=Shopware%3a%20shopware-vagrant&item_number=shopware-vagrant&currency_code=EUR
 
 This is an opinionated fork of [Vagrant Shopware Box](https://github.com/shopwareLabs/shopware-vagrant) to match our own project structure.
 Additional features include:
@@ -35,7 +35,7 @@ Development
 1. Fork the repository from GitHub.
 2. Clone your fork to your local machine:
 
-        $ git clone https://github.com/USER/vagrant-shopware
+        $ git clone https://github.com/USER/shopware-vagrant
 
 3. Create a git branch
 
