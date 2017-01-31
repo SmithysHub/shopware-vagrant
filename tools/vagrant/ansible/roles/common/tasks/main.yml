@@ -1,0 +1,60 @@
+---
+- name: Add Oracle Java Repository
+  become: yes
+  apt_repository: repo='ppa:webupd8team/java'
+
+- name: Accept Java 8 License
+  become: yes
+  debconf: name='oracle-java8-installer' question='shared/accepted-oracle-license-v1-1' value='true' vtype='select'
+
+- name: update apt cache
+  apt: update_cache=yes cache_valid_time=3600
+  become: yes
+
+- name: install packages
+  apt: pkg={{ item }} state=latest
+  become: yes
+  with_items:
+    - sudo
+    - bash-completion
+    - python-pycurl
+    - software-properties-common
+    - git
+    - htop
+    - tree
+    - vim
+    - curl
+    - zip
+    - rsync
+    - wget
+    - ant
+
+- name: be sure ntp is installed
+  apt: pkg=ntp state=installed
+  tags: ntp
+  become: yes
+
+- name: be sure ntpd is running and enabled
+  service: name=ntp state=running enabled=yes
+  tags: ntp
+  become: yes
+
+- name: Install Oracle Java 8
+  become: yes
+  apt: name={{item}} state=latest
+  with_items:
+    - oracle-java8-installer
+    - ca-certificates
+    - oracle-java8-set-default
+
+- name: Add a ~/bin to PATH
+  lineinfile: dest=~/.bashrc line='PATH="$HOME/bin:$PATH"'
+
+- name: Make sure ~/bin exists
+  file: path=~/bin state=directory
+
+- name: expose .env
+  template: src=.env.j2 dest=~/.env
+
+- name: copy install_shopware
+  template: src=install_shopware.j2 dest=~/bin/install_shopware mode=0755

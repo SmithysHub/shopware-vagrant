@@ -1,0 +1,83 @@
+local_vars = {
+  'shopware' => {
+    'provision' => true,
+    'vm_memory' => 8192, # amount of memory for the VM
+    'vm_cpus' => 4, # number of CPUs to use for the VM
+    'vm_gui' => false, # show VirtualBox GUI or run in headless mode
+    'vm_domain' => 'shopware.local', # domain of the project
+    'vm_ip' => '10.0.0.10', # local ip of the project
+    'vm_ssh_port' => 2210, # local ssh port of the VM (important when multiple VMs are running on the host)
+    'box_os' => 'ubuntu-16.04.1-server-amd64', # current box os
+    'box_version' => '2017-1.0.0', # current box version (important if a prebuild box is used)
+    'synced_folders' => [
+        {
+            'source' => '.',
+            'target' => '/vagrant'
+        },
+        {
+            'source' => '../../public/',
+            'target' => '/var/www/html/current/public/'
+        },
+        {
+            'source' => '../../shared/',
+            'target' => '/var/www/html/shared/'
+        }
+    ]
+  }
+}
+
+Vagrant.configure('2') do |global_config|
+  global_config.ssh.forward_agent = true
+  local_vars.each_pair do |name, options|
+    global_config.vm.define name do |config|
+      config.vm.hostname = "#{name}-local"
+      # network
+      config.vm.network 'private_network', ip: options['vm_ip']
+      config.vm.network 'forwarded_port', guest: 22, host: options['vm_ssh_port']
+      options['synced_folders'].each_with_index do |folder, i|
+        config.vm.synced_folder "#{folder['source']}", "#{folder['target']}", id: "#{i}", type: 'nfs', mount_options: ['vers=3','tcp','nolock']
+      end
+      # basebox
+      if options['provision'] then
+        config.vm.box = "ffuenf/#{options['box_os']}"
+      else
+        config.vm.box = "#{name}-local"
+        config.vm.box_url = "/Volumes/resources/devops/boxes/#{name}_#{options['box_version']}.box"
+      end
+      # virtualbox options
+      config.vm.provider 'virtualbox' do |v|
+        v.gui = options['vm_gui']
+        v.customize ['modifyvm', :id, '--memory', options['vm_memory']]
+        v.customize ['modifyvm', :id, '--cpus', options['vm_cpus']]
+        v.customize ['modifyvm', :id, '--natdnshostresolver1', 'on']
+        v.customize ['modifyvm', :id, '--natdnsproxy1', 'on']
+        v.customize ['guestproperty', 'set', :id, '--timesync-set-threshold', 10000]
+      end
+      if options['provision'] then
+$setup = <<SCRIPT
+  sed -i 's/http.us.debian/ftp.de.debian/g' /etc/apt/sources.list
+  sed -i 's/http.us.archive/ftp.de.archive/g' /etc/apt/sources.list
+  sed -i 's/us.archive.ubuntu.com/de.archive.ubuntu.com/g' /etc/apt/sources.list
+  apt-get -o Acquire::Check-Valid-Until=false update --fix-missing >/dev/null
+  echo 'Europe/Berlin' | sudo tee /etc/timezone && dpkg-reconfigure --frontend noninteractive tzdata >/dev/null
+  apt-get -qy install software-properties-common
+  apt-add-repository -y ppa:ansible/ansible
+  apt-get -qy update
+  apt-get -qy install ansible
+SCRIPT
+        # shell
+        config.vm.provision 'shell', inline: $setup
+        # ansible
+        config.vm.provision "ansible_local" do |ansible|
+          ansible.playbook = "ansible/playbook.yml"
+          ansible.extra_vars = {
+            "apache_root" => "/var/www/html/current/public/",
+            "shopware_app_host" => options['vm_ip'],
+            "shopware_app_domain" => options['vm_domain']
+          }
+        end
+      end
+      config.vm.provision 'shell', inline: '/home/vagrant/bin/install_shopware'
+    end
+  end
+end

@@ -1,1 +1,1 @@
-ansible/roles/common/files/bin/* text eol=lf
+tools/vagrant/ansible/roles/common/files/bin/* text eol=lf

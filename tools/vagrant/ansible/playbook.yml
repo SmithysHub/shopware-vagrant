@@ -1,0 +1,12 @@
+---
+- name: apply common configuration to all nodes
+  hosts: all
+  roles:
+    - common
+    - apache
+    - mysql
+    - ioncube
+    - composer
+    - nodejs
+    - sw-cli-tools
+    - grunt

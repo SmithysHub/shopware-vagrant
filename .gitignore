@@ -1,2 +1,50 @@
-.vagrant
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+./Icon?
+ehthumbs.db
+Thumbs.db
+# SASS/SCSS cache
+.sass-cache/
+# Caches/Proxies
+.php_cs
+.php_cs.cache
+# PhpStorm-Project
+.idea/
+
+public/vendor
+!public/vendor/.htaccess
+
+public/config.php
+public/var
+public/media
+public/files
+public/web
+shared/var
+shared/web
+shared/media/image
+*.bak
+*.sql
+*.sql.gz
+.env
+
+.AppleDouble
+.Trashes
+.DS_Store
+.htusers
+.thumbs
 .idea
+*.bak
+*.BAK
+*.old
+*.OLD
+Berksfile.lock
+Gemfile.lock
+
+tools/vagrant/.vagrant/
+tools/vagrant/ansible/playbook.retry
+
+!**/.gitkeep

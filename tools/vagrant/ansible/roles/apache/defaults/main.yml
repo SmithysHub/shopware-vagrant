@@ -1,0 +1,4 @@
+---
+apache_user: vagrant
+apache_group: vagrant
+apache_root: /var/www/html/current/public/
